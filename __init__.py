@@ -10,39 +10,15 @@ WEB_DIRECTORY = "web"
 
 CONFIG = {
     "enabled": True,
-    "include_workflow": True,
     "timestamp_format": "%Y-%m-%d %H-%M-%S",
-    "template": "{timestamp} {workflow} {prefix}",
+    "template": "{timestamp} {prefix}",
 }
 
 
 ORIGINAL_FUNC = folder_paths.get_save_image_path
 
 
-def extract_workflow_name(kwargs):
-
-    try:
-        extra = kwargs.get("extra_pnginfo", {})
-
-        if isinstance(extra, dict) and "workflow" in extra:
-            name = extra["workflow"].get("name")
-            if name:
-                return name
-
-        prompt = kwargs.get("prompt", {})
-
-        if isinstance(prompt, dict) and "workflow" in prompt:
-            name = prompt["workflow"].get("name")
-            if name:
-                return name
-
-    except Exception:
-        pass
-
-    return None
-
-
-def build_prefix(timestamp, workflow, original_prefix):
+def build_prefix(timestamp, original_prefix):
     directory, basename = os.path.split(original_prefix)
 
     if CONFIG["strip_directories"]:
@@ -50,7 +26,6 @@ def build_prefix(timestamp, workflow, original_prefix):
 
     new_prefix = CONFIG["template"].format(
         timestamp=timestamp,
-        workflow=workflow,
         prefix=basename,
     )
 
@@ -72,13 +47,10 @@ def patched_get_save_image_path(*args, **kwargs):
         CONFIG["timestamp_format"]
     )
 
-    workflow = extract_workflow_name(kwargs)
-
     if "filename_prefix" in kwargs:
 
         kwargs["filename_prefix"] = build_prefix(
             timestamp,
-            workflow,
             kwargs["filename_prefix"]
         )
 
@@ -90,7 +62,6 @@ def patched_get_save_image_path(*args, **kwargs):
 
         args[0] = build_prefix(
             timestamp,
-            workflow,
             args[0]
         )
 

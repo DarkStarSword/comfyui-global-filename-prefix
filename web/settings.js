@@ -23,25 +23,14 @@ const { app } = window.comfyAPI.app;
         }
     });
 
-    // Workflow toggle
-    app.ui.settings.addSetting({
-        id: CATEGORY + ".include_workflow",
-        name: "Include workflow name",
-        type: "boolean",
-        defaultValue: true,
-        onChange: async (value) => {
-            await sendUpdate({ include_workflow: value });
-        }
-    });
-
     // Template editor
     app.ui.settings.addSetting({
         id: CATEGORY + ".template",
         name: "Filename prefix template",
         type: "text",
-        defaultValue: "{timestamp} {workflow} {prefix}",
+        defaultValue: "{timestamp} {prefix}",
         attrs: {
-            placeholder: "{timestamp} {workflow} {prefix}"
+            placeholder: "{timestamp} {prefix}"
         },
         onChange: async (value) => {
             await sendUpdate({ template: value });

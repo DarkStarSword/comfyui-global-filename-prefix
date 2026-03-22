@@ -9,7 +9,6 @@ ComfyUI normally applies filename prefixes per-node. That's very flexible, but c
 This extension solves this:
 
 - Timestamp insertion to permanently solve filename clashes
-- Workflow name insertion to keep things organised
 - Custom prefix templates
 - Works with built-in SaveImage nodes
 - Works with VideoHelperSuite Video Combine
@@ -19,7 +18,7 @@ This extension solves this:
 
 ## Example output filename
 
-    2026-03-22 18-14-09 MyWorkflow ComfyUI_00001.png
+    2026-03-22 18-14-09 ComfyUI_00001.png
 
 ---
 
@@ -34,13 +33,12 @@ Options:
 | Setting | Description |
 |--------|-------------|
 Enabled | Toggle prefix injection |
-Include workflow name | Adds workflow filename if available |
 Prefix template | Customizable formatting template |
 Timestamp format | Python `strftime()` format string |
 
 Example template:
 
-    {timestamp} {workflow} {prefix}
+    {timestamp} {prefix}
 
 
 Supported variables:
@@ -48,7 +46,6 @@ Supported variables:
 | Variable | Meaning |
 |----------|--------|
 {timestamp} | Generated timestamp |
-{workflow} | Workflow filename |
 {prefix} | Original filename prefix |
 
 ---
