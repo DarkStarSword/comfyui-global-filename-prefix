@@ -24,9 +24,15 @@ def build_prefix(timestamp, original_prefix):
     if CONFIG["strip_directories"]:
         directory = ""
 
-    new_prefix = CONFIG["template"].format(
-        timestamp=timestamp,
-        prefix=basename,
+    class SafeDict(dict):
+        def __missing__(self, key):
+            return ""
+
+    new_prefix = CONFIG["template"].format_map(
+        SafeDict(
+            timestamp=timestamp,
+            prefix=basename,
+        )
     )
 
     # normalize spacing
@@ -87,4 +93,4 @@ async def update_settings(request):
 
     return web.json_response({"status": "ok"})
 
-print("[global_filename_prefix] prefix hook active (settings synced)")
+print("[global_filename_prefix] loaded successfully")
