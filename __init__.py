@@ -1,3 +1,4 @@
+import os
 import datetime
 import folder_paths
 from server import PromptServer
@@ -11,7 +12,7 @@ CONFIG = {
     "enabled": True,
     "include_workflow": True,
     "timestamp_format": "%Y-%m-%d %H-%M-%S",
-    "template": "{timestamp}-{workflow}-{prefix}",
+    "template": "{timestamp} {workflow} {prefix}",
 }
 
 
@@ -42,28 +43,24 @@ def extract_workflow_name(kwargs):
 
 
 def build_prefix(timestamp, workflow, original_prefix):
+    directory, basename = os.path.split(original_prefix)
 
-    template = CONFIG.get(
-        "template",
-        "{timestamp}-{workflow}-{prefix}"
+    if CONFIG["strip_directories"]:
+        directory = ""
+
+    new_prefix = CONFIG["template"].format(
+        timestamp=timestamp,
+        workflow=workflow,
+        prefix=basename,
     )
 
-    values = {
-        "timestamp": timestamp,
-        "workflow": workflow or "",
-        "prefix": original_prefix or "",
-    }
+    # normalize spacing
+    new_prefix = " ".join(new_prefix.split())
 
-    result = template.format(**values)
+    if directory:
+        return os.path.join(directory, new_prefix)
 
-    # Remove duplicate separators caused by missing workflow
-    while "--" in result:
-        result = result.replace("--", "-")
-
-    # Remove trailing separator if present
-    result = result.strip("- ")
-
-    return result
+    return new_prefix
 
 
 def patched_get_save_image_path(*args, **kwargs):

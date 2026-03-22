@@ -39,9 +39,9 @@ const { app } = window.comfyAPI.app;
         id: CATEGORY + ".template",
         name: "Filename prefix template",
         type: "text",
-        defaultValue: "{timestamp}-{workflow}-{prefix}",
+        defaultValue: "{timestamp} {workflow} {prefix}",
         attrs: {
-            placeholder: "{timestamp}-{workflow}-{prefix}"
+            placeholder: "{timestamp} {workflow} {prefix}"
         },
         onChange: async (value) => {
             await sendUpdate({ template: value });
@@ -61,5 +61,17 @@ const { app } = window.comfyAPI.app;
             await sendUpdate({ timestamp_format: value });
         }
     });
+
+	app.ui.settings.addSetting({
+		id: CATEGORY + ".strip_directories",
+		name: "Ignore folder paths in node filename prefixes",
+		type: "boolean",
+		defaultValue: false,
+		onChange: async (value) => {
+			await sendUpdate({
+				strip_directories: value
+			});
+		}
+	});
 
 })();
