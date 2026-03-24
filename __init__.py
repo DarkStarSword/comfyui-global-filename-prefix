@@ -1,4 +1,5 @@
 import os
+import json
 import datetime
 import folder_paths
 from server import PromptServer
@@ -6,8 +7,11 @@ from aiohttp import web
 
 NODE_CLASS_MAPPINGS = {}
 WEB_DIRECTORY = "web"
+CATEGORY = "Global Filename Prefix"
 
 
+# Note the UI also defines default values that would usually trump these.
+# Remember to keep them both in sync to avoid any surprises from edge cases.
 CONFIG = {
     "enabled": True,
     "strip_directories": False,
@@ -94,4 +98,50 @@ async def update_settings(request):
 
     return web.json_response({"status": "ok"})
 
+def load_settings():
+    '''
+    Loads the settings from comfy.settings.json on startup to ensure that the
+    user settings are respected even if the UI does not call update_settings
+    (e.g. if the queue manager extension resumes after restarting ComfyUI, or
+    the user starts a workflow without refreshing the browser)
+    '''
+
+    # There doesn't seem to be a python API to access these (only a web request
+    # API), so for now just reading them directly. Assuming the "default" user
+    # - handling edge cases involving multi users is getting too niche.
+    settings_path = (
+        os.path.join(
+            folder_paths.get_user_directory(),
+            "default",
+            "comfy.settings.json")
+    )
+
+    if not os.path.isfile(settings_path):
+        return
+
+    try:
+
+        with open(settings_path, "r") as f:
+            data = json.load(f)
+
+        for key in CONFIG:
+
+            full_key = f"{CATEGORY}.{key}"
+
+            if full_key in data:
+                CONFIG[key] = data[full_key]
+
+        print(
+            "[global_filename_prefix] loaded settings from comfy.settings.json:",
+            CONFIG,
+        )
+
+    except Exception as e:
+
+        print(
+            "[global_filename_prefix] failed to load settings:",
+            e,
+        )
+
+load_settings()
 print("[global_filename_prefix] loaded successfully")

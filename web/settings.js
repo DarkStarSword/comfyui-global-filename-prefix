@@ -13,29 +13,6 @@ app.registerExtension({
             });
         }
 
-        async function syncSettingsToBackend() {
-
-            const keys = [
-                "enabled",
-                "strip_directories",
-                "timestamp_format",
-                "template"
-            ];
-
-            const payload = {};
-
-            for (const key of keys) {
-
-                payload[key] =
-                    app.ui.settings.getSettingValue(
-                        CATEGORY + "." + key
-                    );
-
-            }
-
-            await sendUpdate(payload);
-        }
-
         // Enable toggle
         app.ui.settings.addSetting({
             id: CATEGORY + ".enabled",
@@ -86,7 +63,5 @@ app.registerExtension({
                 });
             }
         });
-
-        await syncSettingsToBackend();
     }
 });
