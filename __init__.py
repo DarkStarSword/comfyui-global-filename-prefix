@@ -10,6 +10,7 @@ WEB_DIRECTORY = "web"
 
 CONFIG = {
     "enabled": True,
+    "strip_directories": False,
     "timestamp_format": "%Y-%m-%d %H-%M-%S",
     "template": "{timestamp} {prefix}",
 }
